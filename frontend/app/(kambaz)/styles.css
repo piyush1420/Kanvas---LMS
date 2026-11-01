@@ -1,0 +1,174 @@
+body   {
+    margin: 0;
+    padding: 0;
+  }
+  
+  body * {
+    font-family: Arial,
+    Helvetica, sans-serif;
+  }
+  
+  @media (min-width: 768px) {
+    #wd-kambaz .wd-main-content-offset {
+      padding-left: 140px !important;
+    }
+  }
+
+  .list-group.wd > .list-group-item.active {
+    color: black;
+    background-color: white;
+    border-left: 3px solid black !important;
+  }
+  
+  .btn-secondary {
+    --bs-btn-color: #000 !important;
+    --bs-btn-bg: #c7cdd1 !important;
+    --bs-btn-border-color: #c7cdd1 !important;
+    --bs-btn-hover-color: #fff !important;
+  }
+  .bg-secondary {
+    --bs-secondary-rgb: 199, 205, 209;
+  }
+  .list-group-item {
+    --bs-list-group-border-color: gray;
+  }
+  .wd-lesson {
+    border-left: 3px solid green !important;
+  }
+
+.wd-assignment-item {
+    border-left: 3px solid green !important;
+    border-top: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .wd-assignment-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+
+  .wd-assignment-header {
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+
+  #wd-assignments .list-group,
+  #wd-assignments .list-group-item {
+    border-radius: 0 !important;
+  }
+  
+  .wd-assignment-group {
+    border: 1px solid #dee2e6;
+    margin-bottom: 1rem;
+  }
+
+  #wd-search-assignment {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+  }
+  
+  #wd-search-assignment:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+
+  #wd-assignments a strong {
+    color: #de0a0a;
+  }
+  
+  #wd-assignments a:hover strong {
+    color: #0056b3;
+    text-decoration: underline;
+  }
+
+  .wd-assignment-percentage {
+    display: inline-block;
+    padding: 4px 12px;
+    border: 1px solid #6c757d;
+    border-radius: 20px;
+    background-color: #b8bec3;
+    font-size: 0.9em;
+    font-weight: normal;
+    margin-left: 8px;
+  }
+
+
+
+#wd-assignments-editor {
+    max-width: 1200px;
+  }
+  
+  #wd-assignments-editor .form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  
+  #wd-assignments-editor .card {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+  }
+
+  .wd-assign-to-container {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 6px;
+    min-height: 38px;
+    background-color: #fff;
+  }
+  
+  .wd-assign-tag {
+    display: inline-block;
+    padding: 4px 8px;
+    margin: 2px;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  
+  .wd-remove-tag {
+    border: none;
+    background: none;
+    color: #6c757d;
+    margin-left: 4px;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+  
+  .wd-remove-tag:hover {
+    color: #dc3545;
+  }
+  
+ 
+  #wd-assignments-editor .form-control,
+  #wd-assignments-editor .form-select {
+    border-radius: 4px;
+  }
+  
+  #wd-assignments-editor textarea {
+    font-family: inherit;
+    line-height: 1.5;
+  }
+  
+  #wd-assignments-editor .form-check {
+    padding-left: 1.5em;
+  }
+  
+  #wd-assignments-editor .btn-secondary {
+    background-color: #edeeee;
+    border-color: #6c757d;
+  }
+  
+  #wd-assignments-editor .btn-secondary:hover {
+    background-color: #6b6e71;
+    border-color: #565e64;
+  }
+  
+  #wd-description {
+    white-space: pre-wrap;
+  }

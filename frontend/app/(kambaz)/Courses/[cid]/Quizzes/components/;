@@ -1,0 +1,293 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { CiEdit } from "react-icons/ci";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useSelector } from "react-redux";
+import { Button } from "react-bootstrap";
+import * as quizClient from "../client";
+import { v4 as uuidv4 } from "uuid";
+
+export default function QuizDetails() {
+  const router = useRouter();
+  const { cid, qid } = useParams();
+  const [attempt, setAttempt] = useState({
+    _id: "",
+    attemptNo: 0,
+  });
+  const [questionsCount, setQuestionsCount] = useState(0);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const [quiz, setQuiz] = useState({
+    _id: 0,
+    title: "Loading...",
+    type: "",
+    description: "",
+    course: "",
+    questions: "",
+    published: false,
+    due: "",
+    for: "",
+    availableFrom: "",
+    until: "",
+    points: 0,
+    assignmentGroup: "QUIZZES",
+    shufflesAns: true,
+    timeLmt: 30,
+    multipleAttempts: false,
+    viewResponses: true,
+    showCorrectAnswers: "",
+    oneQaTime: true,
+    lockdownBrowser: false,
+    viewResults: false,
+    webcam: false,
+    lockQafterA: false,
+    maxAttempts: 1,
+  });
+
+  const getQuiz = async () => {
+    const quiz = await quizClient.findQuizById(cid, qid);
+    setQuiz(quiz);
+  };
+
+  const getQuizQuestions = async () => {
+    try {
+      const questions = await quizClient.getQuestionsForQuiz(cid, qid);
+      setQuestionsCount(questions.length);
+    } catch (error) {
+      console.error("Error fetching quiz questions:", error);
+      setQuestionsCount(0);
+    }
+  };
+
+  const getQuizAttempt = async () => {
+    const quizAttempt = await quizClient.findQuizAttemptById(
+      cid,
+      qid,
+      currentUser._id
+    );
+    if (
+      quizAttempt === null ||
+      quizAttempt === undefined ||
+      quizAttempt.length === 0
+    ) {
+      setAttempt({ _id: "none", attemptNo: 0 });
+      return;
+    } else {
+      setAttempt(quizAttempt[0]);
+    }
+  };
+
+  useEffect(() => {
+    getQuiz();
+    getQuizQuestions();
+    if (currentUser.role === "STUDENT") {
+      getQuizAttempt();
+    }
+  }, []);
+
+  return (
+    <div className="wd-quiz-details p-4">
+      <h2 className="text-danger">Quiz Details</h2>
+
+      {currentUser.role === "STUDENT" && (
+        <div className="wd-quiz-details-actions d-flex justify-content-center mb-4">
+          {attempt._id === "none" && (
+            <Button
+              variant="primary"
+              className="wd-btn-primary"
+              onClick={async (e) => {
+                e.preventDefault();
+                const attemptId = uuidv4();
+                const newAttempt = {
+                  _id: attemptId,
+                  quiz: qid,
+                  user: currentUser._id,
+                  course: cid,
+                  answers: [],
+                  score: 0,
+                  completed: false,
+                  attemptNo: 0,
+                };
+                setAttempt(newAttempt);
+                await quizClient.createAttempt(cid, qid, newAttempt);
+                router.push(
+                  `/Courses/${cid}/Quizzes/${qid}/attempt/${attemptId}`
+                );
+              }}
+            >
+              Attempt Quiz
+            </Button>
+          )}
+          {attempt._id !== "none" && attempt.attemptNo < quiz.maxAttempts && (
+            <Button
+              variant="primary"
+              className="wd-btn-primary me-2"
+              onClick={async (e) => {
+                e.preventDefault();
+                const quizAttempt = await quizClient.findQuizAttemptById(
+                  cid,
+                  qid,
+                  currentUser._id
+                );
+                const attemptId = quizAttempt[0]._id;
+                router.push(
+                  `/Courses/${cid}/Quizzes/${qid}/attempt/${attemptId}`
+                );
+              }}
+            >
+              Attempt Quiz
+            </Button>
+          )}
+          {attempt._id !== "none" && (
+            <Button
+              variant="secondary"
+              className="wd-btn-primary me-2"
+              onClick={async (e) => {
+                e.preventDefault();
+                const quizAttempt = await quizClient.findQuizAttemptById(
+                  cid,
+                  qid,
+                  currentUser._id
+                );
+                router.push(
+                  `/Courses/${cid}/Quizzes/${qid}/results/${quizAttempt[0]._id}`
+                );
+              }}
+            >
+              View Results
+            </Button>
+          )}
+        </div>
+      )}
+
+      {currentUser.role === "FACULTY" && (
+        <div className="wd-quiz-details-actions d-flex justify-content-center flex-row mb-4">
+          <Link href={`/Courses/${cid}/Quizzes/${qid}/preview`}>
+            <Button variant="secondary" className="wd-btn-primary me-2">
+              Preview Quiz
+            </Button>
+          </Link>
+          <Link href={`/Courses/${cid}/Quizzes/${qid}/edit`}>
+            <Button variant="secondary" className="wd-btn-primary">
+              Edit Quiz
+              <CiEdit className="ms-2" />
+            </Button>
+          </Link>
+        </div>
+      )}
+
+      <hr />
+      <div>
+        <h1 className="mb-5">{quiz.title}</h1>
+        <div id="wd-details" className="ms-5 mt-3 mb-5 w-50">
+          <div className="row mt-2">
+            <div className="col-9">
+              <b>Quiz Type</b>
+            </div>
+            <div className="col-3">
+              {(quiz.type === "GRADEDQUIZ" && "Graded Quiz") ||
+                (quiz.type === "PRACTICEQUIZ" && "Practice Quiz") ||
+                (quiz.type === "GRADEDSURVEY" && "Graded Survey") ||
+                (quiz.type === "UNGRADEDSURVEY" && "Ungraded Survey")}
+            </div>
+          </div>
+
+          <div className="row mt-2">
+            <div className="col-9">
+              <b>Points</b>
+            </div>
+            <div className="col-3">{quiz.points}</div>
+          </div>
+
+          {/* Add this new row for number of questions */}
+          <div className="row mt-2">
+            <div className="col-9">
+              <b>Number of Questions</b>
+            </div>
+            <div className="col-3">{questionsCount}</div>
+          </div>
+
+          <div className="row mt-2">
+            <div className="col-9">
+              <b>Assignment Group</b>
+            </div>
+            <div className="col-3">{quiz.assignmentGroup}</div>
+          </div>
+
+          <div className="row mt-2">
+            <div className="col-9">
+              <b>Shuffle answers</b>
+            </div>
+            <div className="col-3">{quiz.shufflesAns ? "Yes" : "No"}</div>
+          </div>
+
+          <div className="row mt-2">
+            <div className="col-9">
+              <b>Time Limit</b>
+            </div>
+            <div className="col-3">
+              {quiz.timeLmt ? `${quiz.timeLmt} minutes` : "No limit"}
+            </div>
+          </div>
+
+          <div className="row mt-2">
+            <div className="col-9">
+              <b>Multiple Attempts</b>
+            </div>
+            <div className="col-3">{quiz.multipleAttempts ? "Yes" : "No"}</div>
+          </div>
+
+          <div className="row mt-2">
+            <div className="col-9">
+              <b>Max Attempts</b>
+            </div>
+            <div className="col-3">{quiz.maxAttempts}</div>
+          </div>
+
+          <div className="row mt-2">
+            <div className="col-9">
+              <b>Show Correct Answers</b>
+            </div>
+            <div className="col-3">
+              {quiz.showCorrectAnswers ? "Yes" : "No"}
+            </div>
+          </div>
+
+          <div className="row mt-2">
+            <div className="col-9">
+              <b>One Question at a Time</b>
+            </div>
+            <div className="col-3">{quiz.oneQaTime ? "Yes" : "No"}</div>
+          </div>
+        </div>
+
+        <div className="wd-footer-details">
+          <hr />
+          <div className="row">
+            <div className="col-3">
+              <b>Due</b>
+            </div>
+            <div className="col-3">
+              <b>For</b>
+            </div>
+            <div className="col-3">
+              <b>Available from</b>
+            </div>
+            <div className="col-3">
+              <b>Until</b>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-3">{quiz.due || "No due date"}</div>
+            <div className="col-3">{quiz.for || "Everyone"}</div>
+            <div className="col-3">{quiz.availableFrom || "Always"}</div>
+            <div className="col-3">{quiz.until || "No end date"}</div>
+          </div>
+          <hr />
+        </div>
+      </div>
+    </div>
+  );
+}
+
